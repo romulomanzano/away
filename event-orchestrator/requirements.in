@@ -1,0 +1,6 @@
+argparse
+gmqtt
+uvloop
+python-dotenv
+rq
+redis

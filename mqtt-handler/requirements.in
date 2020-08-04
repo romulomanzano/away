@@ -1,0 +1,4 @@
+argparse
+gmqtt
+uvloop
+python-dotenv
