@@ -17,7 +17,7 @@ To install just make sure you have pre-commit installed in your local Python 3.7
 
 ## Python Package Management
 
-We use [pip-tools](https://github.com/jazzband/pip-tools/) (see [rational](https://nvie.com/posts/pin-your-packages/), [more](https://hynek.me/articles/python-app-deps-2018/)).
+We use [pip-tools](https://github.com/jazzband/pip-tools/) (see [rationale](https://nvie.com/posts/pin-your-packages/), [more](https://hynek.me/articles/python-app-deps-2018/)).
 
 This **assumes** you are running a virtualenv.
 
