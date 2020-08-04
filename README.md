@@ -3,7 +3,7 @@ Away.so - Server side logic to consume information from TTN
 
 # Codebase
 
-3# Dependencies
+## Dependencies
 
 - Python 3.7.X
 
