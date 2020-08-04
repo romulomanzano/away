@@ -1,6 +1,5 @@
 import gmqtt
 import utils
-import config
 
 
 @utils.logged

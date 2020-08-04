@@ -1,8 +1,6 @@
 import argparse
 import config
-import pickle  # skipcq: BAN-B403
 from utils import logged
-import json
 import gmqtt
 from mqtt_mixin import MqttMixin
 import asyncio
@@ -34,7 +32,7 @@ class Telematics(MqttMixin):
         self.telematics_application_id = telematics_application_id
         self.telematics_client = None
         # initialize internal mqtt client
-        self.define_mqtt_client()
+        self.define_mqtt_client("{}-{}".format("Relayer", telematics_application_id))
 
     @staticmethod
     def _on_connect_telematics(
