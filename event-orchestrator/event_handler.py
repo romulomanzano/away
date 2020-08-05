@@ -1,6 +1,4 @@
-from tflite_runtime.interpreter import Interpreter
 from utils import logged
-import numpy as np
 import argparse
 import config
 from mqtt_mixin import MqttMixin
@@ -24,7 +22,9 @@ class EventHandler(MqttMixin):
         # initialize
         self.define_mqtt_client()
 
-    async def on_message(self, client, topic, payload, qos, properties):
+    async def on_message(
+        self, client, topic, payload, qos, properties
+    ):  # pylint: disable=unused-argument
         """
         Define how to handle the incoming stream
         """
