@@ -104,7 +104,8 @@ class Telematics(MqttMixin):
     async def post_inference_to_telematics_hub(self):
         # external telematics client
         await self.initialize_telematics_connection()
-        # internal mqtt broker
+        # LORA mqtt broker
+        self.mqtt_client.set_auth_credentials(config.LORA_MQTT_BROKER_AUTH_TOKEN, None)
         await self.mqtt_client.connect(
             config.LORA_MQTT_BROKER_HOST, config.LORA_MQTT_BROKER_HOST_PORT
         )
