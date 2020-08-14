@@ -105,7 +105,9 @@ class Telematics(MqttMixin):
         # external telematics client
         await self.initialize_telematics_connection()
         # LORA mqtt broker
-        self.mqtt_client.set_auth_credentials(config.LORA_MQTT_BROKER_AUTH_TOKEN, None)
+        self.mqtt_client.set_auth_credentials(
+            config.LORA_APPLICATION_IDENTIFIER, config.LORA_MQTT_BROKER_AUTH_TOKEN
+        )
         await self.mqtt_client.connect(
             config.LORA_MQTT_BROKER_HOST, config.LORA_MQTT_BROKER_HOST_PORT
         )

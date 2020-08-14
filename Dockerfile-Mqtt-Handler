@@ -1,0 +1,13 @@
+FROM python:3.7-slim-buster
+RUN apt-get update
+RUN apt-get update && apt-get install -y \
+    python3-dev \
+    cython3
+COPY ./mqtt-handler/requirements.txt requirements.txt
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
+COPY mqtt-handler /app
+COPY ./common_utils/utils.py /app/utils.py
+COPY ./common_utils/mqtt_mixin.py /app/mqtt_mixin.py
+WORKDIR /app
+CMD ["/bin/bash"]
