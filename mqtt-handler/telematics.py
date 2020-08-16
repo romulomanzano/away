@@ -25,12 +25,14 @@ class Telematics(MqttMixin):
         telematics_port,
         telematics_auth_token,
         telematics_application_id,
+        telematics_ssl_enabled=config.TELEMATICS_MQTT_BROKER_SSL_ENABLED,
     ):
         self.telematics_broker_host = telematics_broker_host
         self.telematics_port = telematics_port
         self.telematics_auth_token = telematics_auth_token
         self.telematics_application_id = telematics_application_id
         self.telematics_client = None
+        self.telematics_ssl_enabled = telematics_ssl_enabled
         # initialize internal mqtt client
         self.define_mqtt_client("{}-{}".format("Relayer", telematics_application_id))
 
@@ -77,11 +79,14 @@ class Telematics(MqttMixin):
             will_message=will_message,
         )
         Telematics._assign_callbacks_to_client_telematics(self.telematics_client)
-        self.telematics_client.set_auth_credentials(self.telematics_auth_token, None)
+        if self.telematics_auth_token:
+            self.telematics_client.set_auth_credentials(
+                self.telematics_auth_token, None
+            )
         await self.telematics_client.connect(
             self.telematics_broker_host,
             self.telematics_port,
-            ssl=True,
+            ssl=self.telematics_ssl_enabled,
             version=5,
             raise_exc=True,
             keepalive=60,
@@ -109,9 +114,15 @@ class Telematics(MqttMixin):
             config.LORA_APPLICATION_IDENTIFIER, config.LORA_MQTT_BROKER_AUTH_TOKEN
         )
         await self.mqtt_client.connect(
-            config.LORA_MQTT_BROKER_HOST, config.LORA_MQTT_BROKER_HOST_PORT
+            config.LORA_MQTT_BROKER_HOST,
+            config.LORA_MQTT_BROKER_HOST_PORT,
+            ssl=True,
+            version=5,
+            raise_exc=True,
+            keepalive=60,
         )
         self.mqtt_client.subscribe(config.LORA_MQTT_APPLICATION_TOPIC, qos=1)
+
         await STOP.wait()
         await self.mqtt_client.disconnect()
 
@@ -127,19 +138,22 @@ def main():
         required=True,
     )
     parser.add_argument(
-        "--broker_host",
+        "--broker-host",
         help="Telematics broker host URL.",
         default=config.TELEMATICS_MQTT_BROKER_HOST,
+        dest="broker_host",
     )
     parser.add_argument(
-        "--broker_host_port",
+        "--broker-host-port",
         help="Telematics broker host port.",
         default=config.TELEMATICS_MQTT_BROKER_HOST_PORT,
+        dest="broker_host_port",
     )
     parser.add_argument(
-        "--broker_auth_token",
+        "--broker-auth-token",
         help="Telematics broker auth token.",
         default=config.TELEMATICS_MQTT_BROKER_AUTH_TOKEN,
+        dest="broker_auth_token",
     )
     parser.add_argument(
         "--application-identifier",
