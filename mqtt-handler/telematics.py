@@ -4,6 +4,7 @@ from utils import logged
 import gmqtt
 from mqtt_mixin import MqttMixin
 import asyncio
+from gmqtt.mqtt.constants import MQTTv311
 
 # gmqtt also compatible with uvloop
 import uvloop
@@ -117,12 +118,11 @@ class Telematics(MqttMixin):
             config.LORA_MQTT_BROKER_HOST,
             config.LORA_MQTT_BROKER_HOST_PORT,
             ssl=True,
-            version=5,
+            version=MQTTv311,
             raise_exc=True,
             keepalive=60,
         )
         self.mqtt_client.subscribe(config.LORA_MQTT_APPLICATION_TOPIC, qos=1)
-
         await STOP.wait()
         await self.mqtt_client.disconnect()
 
