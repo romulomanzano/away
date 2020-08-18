@@ -5,6 +5,7 @@ import gmqtt
 from mqtt_mixin import MqttMixin
 import asyncio
 from gmqtt.mqtt.constants import MQTTv311
+from gmqtt import Client as MQTTClient
 
 # gmqtt also compatible with uvloop
 import uvloop
@@ -34,8 +35,6 @@ class Telematics(MqttMixin):
         self.telematics_application_id = telematics_application_id
         self.telematics_client = None
         self.telematics_ssl_enabled = telematics_ssl_enabled
-        # initialize internal mqtt client
-        self.define_mqtt_client("{}-{}".format("Relayer", telematics_application_id))
 
     @staticmethod
     def _on_connect_telematics(
@@ -88,7 +87,7 @@ class Telematics(MqttMixin):
             self.telematics_broker_host,
             self.telematics_port,
             ssl=self.telematics_ssl_enabled,
-            version=5,
+            version=MQTTv311,
             raise_exc=True,
             keepalive=60,
         )
@@ -98,7 +97,7 @@ class Telematics(MqttMixin):
     ):  # pylint: disable=unused-argument
         # forward and retain
         self.telematics_client.publish(
-            config.TELEMATICS_MQTT_APPLICATION_TOPIC,
+            topic,
             payload,
             qos=1,
             content_type="json",
@@ -108,6 +107,10 @@ class Telematics(MqttMixin):
         self.logger.info("Retaining in our own MQTT broker.")
 
     async def post_inference_to_telematics_hub(self):
+        # initialize internal mqtt client
+        self.define_mqtt_client(
+            "{}-{}".format("Relayer-", self.telematics_application_id)
+        )
         # external telematics client
         await self.initialize_telematics_connection()
         # LORA mqtt broker
@@ -125,6 +128,7 @@ class Telematics(MqttMixin):
         self.mqtt_client.subscribe(config.LORA_MQTT_APPLICATION_TOPIC, qos=1)
         await STOP.wait()
         await self.mqtt_client.disconnect()
+        await self.client.disconnect()
 
 
 def main():
