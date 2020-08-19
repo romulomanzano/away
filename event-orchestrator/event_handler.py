@@ -3,10 +3,13 @@ import argparse
 import config
 from mqtt_mixin import MqttMixin
 import asyncio
+from gmqtt.mqtt.constants import MQTTv311
 
 # gmqtt also compatible with uvloop
 import uvloop
 import signal
+from models import Device, SensorEventBlob
+from mongoengine import connect
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 STOP = asyncio.Event()
@@ -21,6 +24,7 @@ class EventHandler(MqttMixin):
     def __init__(self):
         # initialize
         self.define_mqtt_client()
+        connect(host=config.MONGO_DB_URI)
 
     async def on_message(
         self, client, topic, payload, qos, properties
@@ -28,7 +32,8 @@ class EventHandler(MqttMixin):
         """
         Define how to handle the incoming stream
         """
-        self.logger.info("Handling event.")
+        SensorEventBlob(payload=payload).save()
+        self.logger.info("Event persisted.")
 
     async def handle_events(self):
         self.mqtt_client.set_auth_credentials(
@@ -38,7 +43,7 @@ class EventHandler(MqttMixin):
             config.TELEMATICS_MQTT_BROKER_HOST,
             config.TELEMATICS_MQTT_BROKER_HOST_PORT,
             ssl=True,
-            version=5,
+            version=MQTTv311,
             raise_exc=True,
             keepalive=60,
         )

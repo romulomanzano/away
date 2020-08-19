@@ -5,7 +5,6 @@ import gmqtt
 from mqtt_mixin import MqttMixin
 import asyncio
 from gmqtt.mqtt.constants import MQTTv311
-from gmqtt import Client as MQTTClient
 
 # gmqtt also compatible with uvloop
 import uvloop
