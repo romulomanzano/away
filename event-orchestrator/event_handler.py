@@ -33,7 +33,7 @@ class EventHandler(MqttMixin):
         """
         Define how to handle the incoming stream
         """
-        SensorEventBlob(payload=json.loads(payload)).save()
+        SensorEventBlob(topic=topic, payload=json.loads(payload)).save()
         self.logger.info("Event persisted.")
 
     async def handle_events(self):

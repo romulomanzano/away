@@ -33,4 +33,5 @@ class User(Document):
 class SensorEventBlob(Document):  # remove after testing
     """This class persists the devices"""
 
+    topic = StringField()
     payload = DictField(required=True)
