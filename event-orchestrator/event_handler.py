@@ -4,6 +4,7 @@ import config
 from mqtt_mixin import MqttMixin
 import asyncio
 from gmqtt.mqtt.constants import MQTTv311
+import json
 
 # gmqtt also compatible with uvloop
 import uvloop
@@ -23,7 +24,7 @@ def ask_exit(*args):
 class EventHandler(MqttMixin):
     def __init__(self):
         # initialize
-        self.define_mqtt_client()
+        self.define_mqtt_client("away-event-handler")
         connect(host=config.MONGO_DB_URI)
 
     async def on_message(
@@ -32,7 +33,7 @@ class EventHandler(MqttMixin):
         """
         Define how to handle the incoming stream
         """
-        SensorEventBlob(payload=payload).save()
+        SensorEventBlob(payload=json.loads(payload)).save()
         self.logger.info("Event persisted.")
 
     async def handle_events(self):

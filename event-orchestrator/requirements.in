@@ -4,3 +4,4 @@ uvloop
 python-dotenv
 rq
 redis
+mongoengine
