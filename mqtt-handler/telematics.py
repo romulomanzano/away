@@ -84,11 +84,6 @@ class Telematics(MqttMixin):
             self.telematics_client.set_auth_credentials(
                 self.telematics_auth_token, None
             )
-        self.logger.info(
-            "{},{},{}".format(
-                client_id, self.telematics_auth_token, self.telematics_broker_host
-            )
-        )
         await self.telematics_client.connect(
             self.telematics_broker_host,
             self.telematics_port,
@@ -113,12 +108,12 @@ class Telematics(MqttMixin):
         self.logger.info("Retaining in our own MQTT broker.")
 
     async def post_inference_to_telematics_hub(self):
+        # external telematics client
+        await self.initialize_telematics_connection()
         # initialize internal mqtt client
         self.define_mqtt_client(
             "{}-{}".format("Relayer", self.telematics_application_id)
         )
-        # external telematics client
-        await self.initialize_telematics_connection()
         # LORA mqtt broker
         self.mqtt_client.set_auth_credentials(
             config.LORA_APPLICATION_IDENTIFIER, config.LORA_MQTT_BROKER_AUTH_TOKEN
