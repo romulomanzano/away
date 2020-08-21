@@ -67,21 +67,28 @@ class Telematics(MqttMixin):
             "Unexpected Exit.",
             will_delay_interval=10,
             qos=1,
-            retain=True,
+            retain=False,
+        )
+        client_id = "{}-{}".format(
+            self.__class__.__name__, self.telematics_application_id
         )
         self.telematics_client = gmqtt.Client(
-            client_id="{}-{}".format(
-                self.__class__.__name__, self.telematics_application_id
-            ),
+            client_id=client_id,
             clean_session=True,
             optimistic_acknowledgement=True,
             will_message=will_message,
         )
-        Telematics._assign_callbacks_to_client_telematics(self.telematics_client)
+
+        # Telematics._assign_callbacks_to_client_telematics(self.telematics_client)
         if self.telematics_auth_token:
             self.telematics_client.set_auth_credentials(
                 self.telematics_auth_token, None
             )
+        self.logger.info(
+            "{},{},{}".format(
+                client_id, self.telematics_auth_token, self.telematics_broker_host
+            )
+        )
         await self.telematics_client.connect(
             self.telematics_broker_host,
             self.telematics_port,
@@ -100,7 +107,7 @@ class Telematics(MqttMixin):
             payload,
             qos=1,
             content_type="json",
-            retain=True,
+            retain=False,
             user_property=properties.get("user_property"),
         )
         self.logger.info("Retaining in our own MQTT broker.")
@@ -108,7 +115,7 @@ class Telematics(MqttMixin):
     async def post_inference_to_telematics_hub(self):
         # initialize internal mqtt client
         self.define_mqtt_client(
-            "{}-{}".format("Relayer-", self.telematics_application_id)
+            "{}-{}".format("Relayer", self.telematics_application_id)
         )
         # external telematics client
         await self.initialize_telematics_connection()

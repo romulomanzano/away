@@ -24,7 +24,7 @@ def ask_exit(*args):
 class EventHandler(MqttMixin):
     def __init__(self):
         # initialize
-        self.define_mqtt_client("away-event-handler")
+        self.define_mqtt_client("away-event-handler", clean_session=False)
         connect(host=config.MONGO_DB_URI)
 
     async def on_message(

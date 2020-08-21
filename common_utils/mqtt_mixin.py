@@ -31,7 +31,7 @@ class MqttMixin:
         """
         raise NotImplementedError
 
-    def define_mqtt_client(self, client_id):
+    def define_mqtt_client(self, client_id, clean_session=True):
         will_message = gmqtt.Message(
             "brokers/{}/alerts/service/{}/disconnected".format(
                 client_id, self.__class__.__name__
@@ -43,7 +43,7 @@ class MqttMixin:
         )
         self.mqtt_client = gmqtt.Client(
             client_id=client_id,
-            clean_session=True,
+            clean_session=clean_session,
             optimistic_acknowledgement=True,
             will_message=will_message,
         )
