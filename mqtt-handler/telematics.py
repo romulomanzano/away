@@ -62,15 +62,15 @@ class Telematics(MqttMixin):
         client.on_disconnect = Telematics._on_disconnect_telematics
 
     async def initialize_telematics_connection(self):
+        client_id = "{}-{}".format(
+            self.__class__.__name__, self.telematics_application_id
+        )
         will_message = gmqtt.Message(
-            config.TELEMATICS_MQTT_APPLICATION_ALERTS_TOPIC,
+            "{}{}".format(config.TELEMATICS_MQTT_PUBLISHER_ALERTS, client_id),
             "Unexpected Exit.",
             will_delay_interval=10,
             qos=1,
             retain=False,
-        )
-        client_id = "{}-{}".format(
-            self.__class__.__name__, self.telematics_application_id
         )
         self.telematics_client = gmqtt.Client(
             client_id=client_id,
