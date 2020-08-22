@@ -1,5 +1,12 @@
 from mongoengine import Document
-from mongoengine.fields import ReferenceField, ListField, StringField, DictField
+from mongoengine.fields import (
+    ReferenceField,
+    ListField,
+    StringField,
+    DictField,
+    BooleanField,
+)
+from bson import ObjectId
 
 
 class Device(Document):
@@ -30,8 +37,23 @@ class User(Document):
     email = StringField(required=True)
 
 
-class SensorEventBlob(Document):  # remove after testing
+class DeviceEvent(Document):  # remove after testing
     """This class persists the devices"""
 
     topic = StringField()
     payload = DictField(required=True)
+    device = ReferenceField("Device")
+    processed = BooleanField(default=False)
+
+    def process(self):
+        """
+        Placeholder to handle all necessary events that need to take place
+        """
+        if not self.processed:
+            self.processed = True
+            self.save()
+
+    @staticmethod
+    def find_and_process_event(_id):
+        event = DeviceEvent.objects.get(id=ObjectId(_id))
+        event.process()

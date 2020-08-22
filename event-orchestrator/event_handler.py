@@ -9,8 +9,14 @@ import json
 # gmqtt also compatible with uvloop
 import uvloop
 import signal
-from models import Device, SensorEventBlob
+from models import Device, DeviceEvent
 from mongoengine import connect
+from rq import Queue
+from redis import Redis
+import config
+
+redis_conn = Redis.from_url(config.REDIS_CONNECTION_STRING)
+task_queue = Queue(config.TASK_QUEUE, connection=redis_conn)
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 STOP = asyncio.Event()
@@ -24,7 +30,7 @@ def ask_exit(*args):
 class EventHandler(MqttMixin):
     def __init__(self):
         # initialize
-        self.define_mqtt_client("away-event-handler", clean_session=False)
+        self.define_mqtt_client("away-event-handler")
         connect(host=config.MONGO_DB_URI)
 
     async def on_message(
@@ -33,8 +39,11 @@ class EventHandler(MqttMixin):
         """
         Define how to handle the incoming stream
         """
-        SensorEventBlob(topic=topic, payload=json.loads(payload)).save()
-        self.logger.info("Event persisted.")
+        event = DeviceEvent(topic=topic, payload=json.loads(payload)).save()
+        job = task_queue.enqueue(DeviceEvent.find_and_process_event, str(event.id))
+        self.logger.info(
+            "Event persisted and scheduled for processing. Job id {}".format(job.id)
+        )
 
     async def handle_events(self):
         self.mqtt_client.set_auth_credentials(
