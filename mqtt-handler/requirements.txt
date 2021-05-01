@@ -4,7 +4,11 @@
 #
 #    pip-compile requirements.in
 #
-argparse==1.4.0           # via -r requirements.in
-gmqtt==0.6.7              # via -r requirements.in
-python-dotenv==0.14.0     # via -r requirements.in
-uvloop==0.14.0            # via -r requirements.in
+argparse==1.4.0
+    # via -r mqtt-handler/requirements.in
+gmqtt==0.6.7
+    # via -r mqtt-handler/requirements.in
+python-dotenv==0.17.1
+    # via -r mqtt-handler/requirements.in
+uvloop==0.14.0
+    # via -r mqtt-handler/requirements.in
