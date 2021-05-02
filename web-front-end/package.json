@@ -20,7 +20,7 @@
     "nouislider": "13.1.4",
     "numeral": "^2.0.6",
     "register-service-worker": "1.6.2",
-    "vue": "2.6.6",
+    "vue": "2.6.11",
     "vue-chartjs": "3.4.2",
     "vue-clipboard2": "0.3.0",
     "vue-constants": "^1.0.3",
@@ -45,7 +45,7 @@
     "prettier": "1.18.2",
     "sass-loader": "^7.1.0",
     "vue-m-message": "^2.0.0",
-    "vue-template-compiler": "2.6.6"
+    "vue-template-compiler": "2.6.11"
   },
   "eslintConfig": {
     "root": true,
