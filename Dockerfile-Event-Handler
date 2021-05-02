@@ -1,0 +1,15 @@
+FROM python:3.7-slim-buster
+RUN apt-get update
+RUN apt-get update && apt-get install -y \
+    python3-dev \
+    cython3
+COPY ./mqtt-handler/requirements.txt requirements-mqtt.txt
+COPY ./data_classes/requirements.txt requirements-data.txt
+COPY ./event-orchestrator/requirements.txt requirements-event.txt
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements-data.txt -r requirements-mqtt.txt -r requirements-event.txt
+COPY event-orchestrator/ /app/
+COPY data_classes/* /app/
+COPY ./common_utils/* /app/
+WORKDIR /app
+CMD ["/bin/bash"]

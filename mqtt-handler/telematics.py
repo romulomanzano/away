@@ -5,7 +5,6 @@ import gmqtt
 from mqtt_mixin import MqttMixin
 import asyncio
 from gmqtt.mqtt.constants import MQTTv311
-from gmqtt import Client as MQTTClient
 
 # gmqtt also compatible with uvloop
 import uvloop
@@ -63,22 +62,24 @@ class Telematics(MqttMixin):
         client.on_disconnect = Telematics._on_disconnect_telematics
 
     async def initialize_telematics_connection(self):
+        client_id = "{}-{}".format(
+            self.__class__.__name__, self.telematics_application_id
+        )
         will_message = gmqtt.Message(
-            config.TELEMATICS_MQTT_APPLICATION_ALERTS_TOPIC,
+            "{}{}".format(config.TELEMATICS_MQTT_PUBLISHER_ALERTS, client_id),
             "Unexpected Exit.",
             will_delay_interval=10,
             qos=1,
-            retain=True,
+            retain=False,
         )
         self.telematics_client = gmqtt.Client(
-            client_id="{}-{}".format(
-                self.__class__.__name__, self.telematics_application_id
-            ),
+            client_id=client_id,
             clean_session=True,
             optimistic_acknowledgement=True,
             will_message=will_message,
         )
-        Telematics._assign_callbacks_to_client_telematics(self.telematics_client)
+
+        # Telematics._assign_callbacks_to_client_telematics(self.telematics_client)
         if self.telematics_auth_token:
             self.telematics_client.set_auth_credentials(
                 self.telematics_auth_token, None
@@ -101,18 +102,18 @@ class Telematics(MqttMixin):
             payload,
             qos=1,
             content_type="json",
-            retain=True,
+            retain=False,
             user_property=properties.get("user_property"),
         )
         self.logger.info("Retaining in our own MQTT broker.")
 
     async def post_inference_to_telematics_hub(self):
-        # initialize internal mqtt client
-        self.define_mqtt_client(
-            "{}-{}".format("Relayer-", self.telematics_application_id)
-        )
         # external telematics client
         await self.initialize_telematics_connection()
+        # initialize internal mqtt client
+        self.define_mqtt_client(
+            "{}-{}".format("Relayer", self.telematics_application_id)
+        )
         # LORA mqtt broker
         self.mqtt_client.set_auth_credentials(
             config.LORA_APPLICATION_IDENTIFIER, config.LORA_MQTT_BROKER_AUTH_TOKEN
