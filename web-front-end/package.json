@@ -42,7 +42,7 @@
     "eslint-plugin-vue": "^5.0.0",
     "node-sass": "^4.9.0",
     "pre-commit": "^1.2.2",
-    "prettier": "1.18.2",
+    "prettier": "2.3.0",
     "sass-loader": "^7.1.0",
     "vue-m-message": "^2.0.0",
     "vue-template-compiler": "2.6.6"
